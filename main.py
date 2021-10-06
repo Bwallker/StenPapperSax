@@ -1,7 +1,5 @@
 import enum
 import random
-
-
 class Move(enum.Enum):
     STEN = 1
     SAX = 2
@@ -14,23 +12,24 @@ class Move(enum.Enum):
             return "sax"
         if self == Move.PASE:
             return "påse"
-        return ""
+        return super().__str__()
 
 class Winner(enum.Enum):
-    PLAYER = 0
-    COMPUTER = 1
-    DRAW = 2
-
+    PLAYER = enum.auto()
+    COMPUTER = enum.auto()
+    DRAW = enum.auto()
 
 def get_wins_over_move(move: Move) -> Move:
     """
         Returns the move the supplied move wins over
     """
-    if move == Move.PASE:
-        return Move.STEN
-    return Move(move.value+1)
+    try:
+        return Move(move.value+1)
+    except ValueError:
+        return Move(1)
 
 
+    
 def get_computer_move() -> Move:
     return random.choice((Move.STEN, Move.SAX, Move.PASE))
 
@@ -95,23 +94,24 @@ def main() -> None:
         if winner == Winner.DRAW:
             print("Oavgjort")
             print()
-            continue
-        if winner == Winner.PLAYER:
-            print()
+        elif winner == Winner.PLAYER:
             print(f"Datorn valde {computer_move}, du valde {move}. Du vann")
+            print()
             player_points += 1
             if player_points == points_to_win:
                 print_results(player_points, computer_points)
                 break
-        if winner == Winner.COMPUTER:
-            print()
+        elif winner == Winner.COMPUTER:
             print(
                 f"Datorn valde {computer_move}, du valde {move}. Datorn vann")
+            print()
             computer_points += 1
             if computer_points == points_to_win:
                 print_results(player_points, computer_points)
                 break
             
+        else:
+            raise ValueError("Illegal state, winner must be the player, the computer, or a draw")
+if __name__ == '__main__':
+    main()
 
-
-main()
